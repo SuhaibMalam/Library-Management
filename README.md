@@ -1,4 +1,4 @@
-# 📚 College Library API
+# 📚 Libary Management
 
 A RESTful API for managing a college library system — books, authors, and users — built with **Node.js**, **Express**, **Sequelize ORM**, and **SQLite**.
 
