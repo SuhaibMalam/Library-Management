@@ -1,0 +1,96 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --color-page: #f7f8fa;
+  --color-card: #ffffff;
+  --color-ink: #111827;
+  --color-body: #374151;
+  --color-muted: #6b7280;
+  --color-line: #e6e8ec;
+  --color-subtle: #f3f4f6;
+  --color-brand: #0f766e;
+  --color-brand-dark: #115e59;
+  --color-brand-soft: #e6f4f2;
+  --color-danger: #b42318;
+  --color-danger-soft: #fef3f2;
+  --color-warn: #b54708;
+  --color-warn-soft: #fffaeb;
+}
+
+@layer base {
+  body {
+    @apply bg-page text-body font-sans antialiased;
+    font-size: 14px;
+  }
+
+  h1, h2, h3 {
+    @apply text-ink tracking-tight;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border px-3.5 text-sm font-semibold whitespace-nowrap transition disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn svg {
+    @apply size-4;
+  }
+  .btn-primary {
+    @apply border-brand bg-brand text-white shadow-sm hover:bg-brand-dark;
+  }
+  .btn-secondary {
+    @apply border-line bg-card text-ink shadow-sm hover:bg-subtle;
+  }
+  .btn-ghost {
+    @apply border-transparent text-muted hover:bg-subtle hover:text-ink;
+  }
+  .btn-danger {
+    @apply border-transparent text-danger hover:bg-danger-soft;
+  }
+
+  .input {
+    @apply h-10 w-full rounded-lg border border-line bg-card px-3 text-sm text-ink shadow-xs outline-none transition placeholder:text-muted/80 focus:border-brand focus:ring-4 focus:ring-brand/10;
+  }
+
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-ink;
+  }
+
+  .card {
+    @apply rounded-xl border border-line bg-card shadow-xs;
+  }
+
+  .table {
+    @apply w-full text-left text-sm;
+  }
+  .table th {
+    @apply border-b border-line bg-subtle/60 px-4 py-2.5 text-xs font-medium text-muted;
+  }
+  .table td {
+    @apply border-b border-line px-4 py-3 align-middle;
+  }
+  .table tr:last-child td {
+    @apply border-b-0;
+  }
+  .table tbody tr {
+    @apply transition-colors hover:bg-subtle/40;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap;
+  }
+  .badge-green {
+    @apply bg-brand-soft text-brand;
+  }
+  .badge-red {
+    @apply bg-danger-soft text-danger;
+  }
+  .badge-gray {
+    @apply bg-subtle text-muted;
+  }
+  .badge-amber {
+    @apply bg-warn-soft text-warn;
+  }
+}
