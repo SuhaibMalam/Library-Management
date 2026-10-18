@@ -1,3 +1,5 @@
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import bcrypt from 'bcrypt';
 import { sequelize } from './db.js';
 import { Book, Loan, User, LOAN_DAYS, calcFine } from './models.js';
@@ -47,16 +49,6 @@ const users = [
 const day = 86_400_000;
 const ago = (n) => new Date(Date.now() - n * day);
 
-await sequelize.sync({ force: true });
-
-const passwordHash = await bcrypt.hash('password123', 10);
-const u = await User.bulkCreate(users.map(([name, email, role]) => ({ name, email, role, passwordHash })));
-const b = await Book.bulkCreate(
-  books.map(([title, author, isbn, category, publishedYear, totalCopies]) => ({
-    title, author, isbn, category, publishedYear, totalCopies, availableCopies: totalCopies,
-  }))
-);
-
 // [userIndex, bookIndex, borrowedDaysAgo, returnedDaysAgo | null]
 const history = [
   [2, 0, 5, null], [2, 9, 20, null], [2, 22, 40, 30],
@@ -65,32 +57,48 @@ const history = [
   [5, 13, 25, null], [5, 22, 12, 4], [5, 4, 45, 33],
 ];
 
-for (const [ui, bi, borrowed, returned] of history) {
-  const borrowedAt = ago(borrowed);
-  const dueDate = new Date(borrowedAt.getTime() + LOAN_DAYS * day);
-  const returnedAt = returned === null ? null : ago(returned);
-  const fine = returnedAt ? calcFine(dueDate, returnedAt) : 0;
-  await Loan.create({ userId: u[ui].id, bookId: b[bi].id, borrowedAt, dueDate, returnedAt, fine });
-  if (!returnedAt) await b[bi].decrement('availableCopies');
+export async function seed() {
+  await sequelize.sync({ force: true });
+
+  const passwordHash = await bcrypt.hash('password123', 10);
+  const u = await User.bulkCreate(users.map(([name, email, role]) => ({ name, email, role, passwordHash })));
+  const b = await Book.bulkCreate(
+    books.map(([title, author, isbn, category, publishedYear, totalCopies]) => ({
+      title, author, isbn, category, publishedYear, totalCopies, availableCopies: totalCopies,
+    }))
+  );
+
+  for (const [ui, bi, borrowed, returned] of history) {
+    const borrowedAt = ago(borrowed);
+    const dueDate = new Date(borrowedAt.getTime() + LOAN_DAYS * day);
+    const returnedAt = returned === null ? null : ago(returned);
+    const fine = returnedAt ? calcFine(dueDate, returnedAt) : 0;
+    await Loan.create({ userId: u[ui].id, bookId: b[bi].id, borrowedAt, dueDate, returnedAt, fine });
+    if (!returnedAt) await b[bi].decrement('availableCopies');
+  }
+
+  // Older, already returned loans so reports have a few weeks of history
+  let past = 0;
+  for (let i = 0; i < 36; i++) {
+    const borrowed = 4 + ((i * 13) % 52);
+    const returned = borrowed - (4 + (i % 13));
+    if (returned < 1) continue;
+    const borrowedAt = ago(borrowed);
+    const dueDate = new Date(borrowedAt.getTime() + LOAN_DAYS * day);
+    const returnedAt = ago(returned);
+    await Loan.create({
+      userId: u[2 + (i % 4)].id,
+      bookId: b[(i * 7) % b.length].id,
+      borrowedAt, dueDate, returnedAt,
+      fine: calcFine(dueDate, returnedAt),
+    });
+    past++;
+  }
+
+  return `Seeded ${u.length} users, ${b.length} books, ${history.length + past} loans`;
 }
 
-// Older, already returned loans so reports have a few weeks of history
-let past = 0;
-for (let i = 0; i < 36; i++) {
-  const borrowed = 4 + ((i * 13) % 52);
-  const returned = borrowed - (4 + (i % 13));
-  if (returned < 1) continue;
-  const borrowedAt = ago(borrowed);
-  const dueDate = new Date(borrowedAt.getTime() + LOAN_DAYS * day);
-  const returnedAt = ago(returned);
-  await Loan.create({
-    userId: u[2 + (i % 4)].id,
-    bookId: b[(i * 7) % b.length].id,
-    borrowedAt, dueDate, returnedAt,
-    fine: calcFine(dueDate, returnedAt),
-  });
-  past++;
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
+  console.log(await seed());
+  await sequelize.close();
 }
-
-console.log(`Seeded ${u.length} users, ${b.length} books, ${history.length + past} loans`);
-await sequelize.close();

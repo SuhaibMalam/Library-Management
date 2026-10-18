@@ -9,6 +9,8 @@ import userRoutes from './routes/users.js';
 import statsRoutes from './routes/stats.js';
 
 const app = express();
+// Render sits one proxy in front, so the rate limiter needs the real client IP
+app.set('trust proxy', 1);
 
 const origins = process.env.CLIENT_URL?.split(',').map((s) => s.trim());
 app.use(cors(origins ? { origin: origins } : {}));

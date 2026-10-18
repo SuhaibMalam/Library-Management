@@ -12,7 +12,7 @@ A full-stack web app for running a small library: a searchable catalogue, check 
 | Librarian | `librarian@library.com` | `password123` |
 | Member | `member@library.com` | `password123` |
 
-> The API runs on a free hosting tier that sleeps when idle, so the first sign-in can take up to a minute.
+> The API runs on a free hosting tier that sleeps when idle, so the first sign-in can take up to a minute. Demo data resets every week.
 
 ![Overview dashboard](docs/screenshots/overview.png)
 
