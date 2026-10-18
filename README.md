@@ -4,7 +4,7 @@
 
 A full-stack web app for running a small library: a searchable catalogue, check out and check in with due dates, renewals and late fines, and separate views for admins, librarians and members.
 
-**Live demo:** _coming soon_
+**Live demo:** https://library-management-tau-one.vercel.app
 
 | Role | Email | Password |
 |---|---|---|
