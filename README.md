@@ -46,12 +46,12 @@ A full-stack web app for running a small library: a searchable catalogue, check 
 | Database | MySQL 8 with Sequelize ORM |
 | Auth | JWT (7-day tokens), bcrypt password hashing |
 | Testing | Node test runner + Supertest against a real MySQL database, GitHub Actions |
-| Hosting | Vercel (client), Render (API), Aiven (MySQL) |
+| Hosting | Vercel (client), Render (API), TiDB Cloud (MySQL-compatible) |
 
 ## How it works
 
 ```
-React app (Vercel)  ──HTTPS/JSON──>  Express API (Render)  ──TLS──>  MySQL (Aiven)
+React app (Vercel)  ──HTTPS/JSON──>  Express API (Render)  ──TLS──>  MySQL (TiDB Cloud)
      JWT in header                    auth + role checks
 ```
 

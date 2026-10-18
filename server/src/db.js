@@ -21,7 +21,7 @@ export const sequelize = new Sequelize(
     port: Number(DB_PORT),
     dialect: 'mysql',
     logging: false,
-    // Managed MySQL (e.g. Aiven) requires TLS; DB_CA holds the provider's CA certificate
+    // Hosted MySQL requires TLS; DB_CA is only needed for providers with a private CA
     dialectOptions:
       DB_SSL === 'true'
         ? { ssl: { rejectUnauthorized: true, ca: DB_CA?.replace(/\\n/g, '\n') } }

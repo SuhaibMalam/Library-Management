@@ -26,7 +26,5 @@ services:
         sync: false
       - key: DB_PASSWORD
         sync: false
-      - key: DB_CA
-        sync: false
       - key: CLIENT_URL
         sync: false
